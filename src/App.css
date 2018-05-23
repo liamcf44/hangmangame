@@ -1,0 +1,17 @@
+button {
+  border-radius: 8px;
+  font-size: 22px;
+  background-color: #e7e7e7;
+  color: black;
+  transition-duration: 0.4s;
+}
+
+button.incorrectGuess {
+  color: red;
+  text-decoration: line-through;
+}
+
+button.correctGuess {
+  color: green;
+  font-weight: bolder;
+}
