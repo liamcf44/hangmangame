@@ -3,6 +3,8 @@ import FormatAnswer from './FormatAnswer';
 import '../App.css';
 import Words from 'an-array-of-english-words';
 import { countryList } from './countryData';
+import { actors } from './actorsData';
+console.log(actors, '^^^^^^^^^^^^^^^^^');
 
 let words = Words.filter(word => word.length > 6);
 
@@ -40,7 +42,7 @@ class App extends Component {
     correctGuesses: [],
     answer: countryList[Math.floor(Math.random() * countryList.length)],
     lives: 10,
-    topics: ['Words', 'Countries'],
+    topics: ['Words', 'Countries', 'Actors/Actresses'],
     currentTopic: ''
   };
 
@@ -53,13 +55,10 @@ class App extends Component {
       topics
     } = this.state;
     if (
-      correctGuesses.length ===
       answer
+        .toUpperCase()
         .split('')
-        .filter(function(item, pos, self) {
-          return self.indexOf(item) === pos;
-        })
-        .join('').length
+        .every(letter => correctGuesses.includes(letter))
     ) {
       alert(`YOU WON!!! the word was ${answer}`);
       this.handleEndGame();
@@ -116,7 +115,9 @@ class App extends Component {
       ? (topic = words)
       : e.target.value === 'Countries'
         ? (topic = countryList)
-        : (topic = words);
+        : e.target.value === 'Actors'
+          ? (topic = actors)
+          : (topic = words);
     this.setState({
       answer: topic[Math.floor(Math.random() * topic.length)],
       currentTopic: e.target.value
@@ -157,7 +158,9 @@ class App extends Component {
       ? (topic = words)
       : currentTopic === 'Countries'
         ? (topic = countryList)
-        : (topic = words);
+        : currentTopic === 'Actors'
+          ? (topic = actors)
+          : (topic = words);
     this.setState({
       incorrectGuesses: [],
       correctGuesses: [],
