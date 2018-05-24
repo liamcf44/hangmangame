@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import FormatAnswer from './FormatAnswer';
+import LetterButtons from './LetterButtons';
+import ChooseTopic from './ChooseTopic';
 import '../App.css';
 import Words from 'an-array-of-english-words';
 import { countryList } from './countryData';
 import { actors } from './actorsData';
-console.log(actors, '^^^^^^^^^^^^^^^^^');
 
 let words = Words.filter(word => word.length > 6);
 
@@ -72,38 +73,17 @@ class App extends Component {
         </div>
         <br />
         <div className="letterbuttons">
-          {alphabet.map((letter, i) => {
-            let newClass;
-            incorrectGuesses.includes(letter)
-              ? (newClass = 'incorrectGuess')
-              : correctGuesses.includes(letter)
-                ? (newClass = 'correctGuess')
-                : (newClass = '');
-            return (
-              <button
-                onClick={this.handleLetterClick}
-                value={letter}
-                className={newClass}
-                key={i}
-              >
-                {letter}
-              </button>
-            );
-          })}
+          <LetterButtons
+            alphabet={alphabet}
+            incorrectGuesses={incorrectGuesses}
+            correctGuesses={correctGuesses}
+            handleLetterClick={this.handleLetterClick}
+          />
         </div>
         <div className="livesDiv">{this.handleLives()}</div>
-        <select onChange={this.selectTopic}>
-          <option selected disabled>
-            Choose Topic
-          </option>
-          {topics.map((topic, i) => {
-            return (
-              <option key={i} value={topic}>
-                {topic}
-              </option>
-            );
-          })}
-        </select>
+        <div className="selectTopic">
+          <ChooseTopic topics={topics} selectTopic={this.selectTopic} />
+        </div>
         <button onClick={this.handleEndGame}>New Game</button>
       </div>
     );
@@ -115,7 +95,7 @@ class App extends Component {
       ? (topic = words)
       : e.target.value === 'Countries'
         ? (topic = countryList)
-        : e.target.value === 'Actors'
+        : e.target.value === 'Actors/Actresses'
           ? (topic = actors)
           : (topic = words);
     this.setState({
@@ -158,7 +138,7 @@ class App extends Component {
       ? (topic = words)
       : currentTopic === 'Countries'
         ? (topic = countryList)
-        : currentTopic === 'Actors'
+        : currentTopic === 'Actors/Actresses'
           ? (topic = actors)
           : (topic = words);
     this.setState({
