@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
+import FormatAnswer from './FormatAnswer';
 import '../App.css';
 import Words from 'an-array-of-english-words';
+import { countryList } from './countryData';
 
-let words = Words.filter(word => word.length > 5);
+let words = Words.filter(word => word.length > 6);
 
 class App extends Component {
   state = {
@@ -36,37 +38,38 @@ class App extends Component {
     ],
     incorrectGuesses: [],
     correctGuesses: [],
-    answer: words[Math.floor(Math.random() * words.length)],
-    lives: 10
+    answer: countryList[Math.floor(Math.random() * countryList.length)],
+    lives: 10,
+    topics: ['Words', 'Countries'],
+    currentTopic: ''
   };
 
   render() {
-    const { alphabet, incorrectGuesses, correctGuesses, answer } = this.state;
+    const {
+      alphabet,
+      incorrectGuesses,
+      correctGuesses,
+      answer,
+      topics
+    } = this.state;
     if (
       correctGuesses.length ===
       answer
         .split('')
         .filter(function(item, pos, self) {
-          return self.indexOf(item) == pos;
+          return self.indexOf(item) === pos;
         })
         .join('').length
     ) {
-      alert('YOU WON!!!');
+      alert(`YOU WON!!! the word was ${answer}`);
       this.handleEndGame();
     }
-
+    console.log(answer);
     return (
       <div>
         <h1>Hangman Game</h1>
         <div className="guessingArea">
-          {answer
-            .toUpperCase()
-            .split('')
-            .map((letter, i) => {
-              if (correctGuesses.includes(letter)) {
-                return <span key={i}>{letter}</span>;
-              } else return <span key={i}>__ </span>;
-            })}
+          <FormatAnswer answer={answer} correctGuesses={correctGuesses} />
         </div>
         <br />
         <div className="letterbuttons">
@@ -90,20 +93,44 @@ class App extends Component {
           })}
         </div>
         <div className="livesDiv">{this.handleLives()}</div>
+        <select onChange={this.selectTopic}>
+          <option selected disabled>
+            Choose Topic
+          </option>
+          {topics.map((topic, i) => {
+            return (
+              <option key={i} value={topic}>
+                {topic}
+              </option>
+            );
+          })}
+        </select>
+        <button onClick={this.handleEndGame}>New Game</button>
       </div>
     );
   }
 
+  selectTopic = e => {
+    let topic;
+    e.target.value === 'Words'
+      ? (topic = words)
+      : e.target.value === 'Countries'
+        ? (topic = countryList)
+        : (topic = words);
+    this.setState({
+      answer: topic[Math.floor(Math.random() * topic.length)],
+      currentTopic: e.target.value
+    });
+  };
+
   handleLetterClick = e => {
     const { incorrectGuesses, correctGuesses, answer, lives } = this.state;
     if (answer.toLowerCase().includes(e.target.value.toLowerCase())) {
-      // e.target.disabled = true;
       e.target.className = 'correctGuess';
       this.setState({
         correctGuesses: [...correctGuesses, e.target.value]
       });
     } else {
-      // e.target.disabled = true;
       e.target.className = 'incorrectGuess';
       this.setState({
         incorrectGuesses: [...incorrectGuesses, e.target.value]
@@ -124,10 +151,17 @@ class App extends Component {
   };
 
   handleEndGame = () => {
+    const { currentTopic } = this.state;
+    let topic;
+    currentTopic === 'Words'
+      ? (topic = words)
+      : currentTopic === 'Countries'
+        ? (topic = countryList)
+        : (topic = words);
     this.setState({
       incorrectGuesses: [],
       correctGuesses: [],
-      answer: words[Math.floor(Math.random() * words.length)],
+      answer: topic[Math.floor(Math.random() * topic.length)],
       lives: 10
     });
   };
